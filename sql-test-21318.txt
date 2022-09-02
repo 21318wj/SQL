@@ -1,0 +1,129 @@
+4/19(화)
+
+create table emp(
+   empno number(4) primary key,
+   ename varchar2(10), job varchar2(10),
+   mgr number(4), sgrade number(1),
+   dno number(2)
+);
+
+desc EMP;
+drop table EMP;
+
+insert into emp values(7369, 'SMITH',   'CLERK',        7902, 1, 20);
+insert into emp values(7499, 'ALLEN',   'SALESMAN',  7698, 3, 30);
+insert into emp values(7521, 'WARD',   'SALESMAN',   7698, 2, 30);
+insert into emp values(7566, 'JONES',   'MANAGER',   7839, 5, 20);
+insert into emp values(7654, 'MARTIN', 'SALESMAN',  7698, 2, 30);
+insert into emp values(7698, 'BLAKE',    'MANAGER',  7839, 5, 30);
+insert into emp values(7782, 'CLARK',    'MANAGER',  7839, 4, 10);
+insert into emp values(7788, 'SCOTT',    'ANALYST',   7566, 5, 20);
+insert into emp values(7839, 'KING',      'PRESIDENT',  null,  5, 20);
+insert into emp values(7844, 'TURNER',  'SALESMAN', 7698, 3, 30);
+insert into emp values(7876, 'ADAMS',   'CLERK',       7788, 3, 20);
+insert into emp values(7900, 'JAMES',    'CLERK',        7698, 2, 30);
+insert into emp values(7902, 'FORD',      'ANALYST',   7566, 5, 20);
+insert into emp values(7934, 'MILLER',    'CLERK',       7782, 3, 10);
+
+select * from emp;
+commit;
+rollback;
+
+create table dept(
+   dno number(2) primary key,
+   dname varchar2(14), dloc varchar2(13)
+);
+desc dept;
+drop table dept;
+
+insert into dept values(10, 'ACCOUNTING', 'NEW YORK');
+insert into dept values(20, 'RESEARCH',     'DALLAS');
+insert into dept values(30, 'SALES',           'CHICAGO');
+insert into dept values(40, 'OPERATIONS',   'BOSTON');
+
+select * from dept;
+commit;
+rollback;
+
+create table salary(
+   sgrade number(1) primary key,
+   sal number(9), smax number(9)
+);
+desc salary;
+drop table salary;
+
+insert into salary values(1, 800, 1200);
+insert into salary values(2, 1300, 1400);
+insert into salary values(3, 1750, 2000);
+insert into salary values(4, 2500, 3000);
+insert into salary values(5, 3500, 9999);
+
+select * from salary;
+commit;
+rollback;
+
+1. 사원 테이블에서 모든 정보(*)를 조회하는 SQL문
+   select * from emp;
+
+2. 급여 테이블에서 급여 등급(sgrade), 급여(sal)를 조회하는 SQL문
+   select sgrade, sal from salary;
+
+3. 사원 테이블의 모든 정보(*)를 사원번호(empno)를 내림차순 정렬하여 조회하는 SQL문
+   select * from emp order by empno desc;
+
+4. 부서 테이블에서 부서 위치(dloc)가 'BOSTON'인 부서의 모든 정보(*)를 조회하는 SQL문
+   select * from dept where dloc = 'BOSTON';
+
+5. 사원 테이블에서 부서 번호(dno)가 '20'인 사원들의 모든 정보(*)를 조회하는 SQL문
+    select * from emp where dno = '20';
+
+6. 사원 테이블에서 부서 번호(dno)가 '30'이면서 업무(job)가 'MANAGER'인 사원의
+모든 정보(*)를 조회하는 SQL문
+    select * from emp where dno = '30' and job = 'MANAGER';
+
+7. 사원 테이블에서 업무가 'CLERA'인 사원들의 사원번호(empno), 사원이름(ename), 부서
+번호(dno)를 '사원번호-사원이름-부서번호'의 형태로 출력하는 SQL문
+   select empno ||'-'|| ename ||'-'|| dno from emp where job = 'CLERK';
+
+8. 사원 테이블과 급여 테이블에서 모든 사원들의 사원번호(empno), 업무(job), 급여등급
+(sgrade), 급여(sal)를 조회하는 SQL문
+   select a.empno, a.job, a.sgrade, b.sal
+   from emp a, salary b
+   where a.sgrade = b.sgrade;
+
+9. 사원 테이블과 부서 테이블에서 모든 사원들의 사원번호(empno), 사원이름(ename), 업무
+(job), 부서번호(dno), 부서위치(dloc)를 조회하는 SQL문
+   select a.empno, a.ename, a.job, a.dno, b.dloc
+   from emp a, dept b
+   where a.dno = b.dno;
+
+9-1. 사원 테이블(emp)의 내용을 전체 출력하면서 직속상사(mgr)의 사원이름 (ename)도 같
+이 출력한다. 출력 형식은 사원번호, 사원이름, 직속상사(mgr), 직속상사 이름, 부서번호
+(dno)로 부서번호를 기준으로 내림차순으로 한다. 단, 부서번호는 20과 30으로
+제한하여 출력한다.
+
+select a.empno, a.ename, a.mgr, b.ename, a.dno, c.dname
+from emp a, emp b, dept c
+where a.mgr = b.empno(+) and a.dno = c.dno 
+         and a.dno in(20, 30)
+order by a.dno desc;
+
+select max(emp_pay) from emp_master;
+select * from emp_master;
+order by emp_pay desc;
+
+select max(emp_id)+1 from emp_master;
+
+select sum(emp_pay) from emp_master
+group by emp_grade;
+//having emp_grade = 10;
+
+select emp_grade, sum(emp_pay)
+from emp_master
+group by emp_grade;
+
+//having emp_grade is not null;
+
+select emp_id, sum(emp_pay)
+from emp_master
+group by emp_grade;

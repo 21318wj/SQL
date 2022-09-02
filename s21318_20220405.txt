@@ -1,0 +1,124 @@
+create table library_rental_tbl_04(
+  student_no     number(5),
+  rental_date     date,
+  book            char(13),
+  rental_day      number(2),
+  return_date    date,
+  return_yn       char(1),
+primary key(student_no, book)
+);
+desc library_rental_tbl_04
+drop table library_rental_tbl_04;
+
+insert into library_rental_tbl_04 values(
+  21301, to_date('20220321','yyyymmdd'), '8801234567890', 10, to_date('20220325','yyyymmdd'), 'Y');
+insert into library_rental_tbl_04 values(
+  21302, to_date('20220321','yyyymmdd'), '8801234567891', 10, null, 'N');
+insert into library_rental_tbl_04 values(
+  21303, to_date('20220322','yyyymmdd'), '8801234567896', 2, null, 'N');
+insert into library_rental_tbl_04 values(
+  21301, to_date('20220325','yyyymmdd'), '8801234567894', 5, null, 'N');
+insert into library_rental_tbl_04 values(
+  21309, to_date('20220325','yyyymmdd'), '8801234567890', 10, null, 'N');
+
+select * from library_rental_tbl_04;
+delete from library_rental_tbl_04;
+commit;
+rollback;
+
+create table library_code_tbl_04(
+  book          char(13) primary key,
+  book_name  varchar2(20),
+  author        varchar2(20),
+  company     varchar2(20),
+  rental_day    number(3),
+  stock_book  number(3),
+  rental_book  number(3)
+);
+desc library_code_tbl_04
+drop table library_code_tbl_04;
+
+insert into library_code_tbl_04 values(
+  '8801234567890', '자바기초', '권원태', '원태출판', 10, 25, 10);
+insert into library_code_tbl_04 values(
+  '8801234567891', '자료구조', '김태한', '태한출판', 10, 10, 5);
+insert into library_code_tbl_04 values(
+  '8801234567892', '빅-데이터', '오지성', '지성출판', 10, 22, 9);
+insert into library_code_tbl_04 values(
+  '8801234567893', 'AI', '이윤아', '윤아출판', 5, 12, 6);
+insert into library_code_tbl_04 values(
+  '8801234567894', '메타버스', '권재현', '재현출판', 5, 30, 11);
+insert into library_code_tbl_04 values(
+  '8801234567895', 'NFT', '송주환', '주환출판', 5, 35, 15);
+insert into library_code_tbl_04 values(
+  '8801234567896', '삼국지', '정하은', '하은출판', 2, 40, 27);
+insert into library_code_tbl_04 values(
+  '8801234567897', '삼국지 경영학', '이영석', '영석출판', 2, 20, 8);
+
+select * from library_code_tbl_04;
+delete from library_code_tbl_04;
+commit;
+rollback;
+
+create table student_tbl_04(
+  student_no     number(5) primary key,
+  student_name  varchar2(20),
+  hakgwa          varchar2(2),
+  hak_year         number(2),
+  student_phone char(13),
+  status 	          char(2)
+);
+desc student_tbl_04
+drop table student_tbl_04;
+
+insert into student_tbl_04 values(
+  21301, '이관우', 10, 2, '010-1231-1234', '1');
+insert into student_tbl_04 values(
+  21302, '장유비', 10, 2, '010-2342-8907', '1');
+insert into student_tbl_04 values(
+  21303, '조자룡', 20, 2, '010-3333-0756', '1');
+insert into student_tbl_04 values(
+  21309, '김유비', 10, 2, '010-4901-6781', '1');
+
+select * from student_tbl_04;
+delete from student_tbl_04;
+commit;
+rollback;
+
+
+alter table library_rental_tbl_04 add(
+  foreign key (student_no)     references student_tbl_04(student_no),
+  foreign key (book) references library_code_tbl_04(book) );
+
+select a.student_no, b.student_name, c.book_name, c.stock_book, c.rental_book
+  from library_rental_tbl_04 a, student_tbl_04 b, library_code_tbl_04 c
+where a.student_no = b.student_no 
+          and a.book = c.book 
+   order by a.student_no asc,
+ 	   c.stock_book desc;
+
+select * from library_rental_tbl_04
+   where return_date is null;
+
+select * from library_rental_tbl_04
+   where return_date is not null;
+
+select * from library_rental_tbl_04
+  where student_no in(21302, 21303);
+
+update  library_rental_tbl_04 set return_date = sysdate
+ where student_no = 21302 or student_no = 21303;
+
+
+update  library_rental_tbl_04 set return_date = sysdate
+ where student_no =in(21302,21303);
+
+update  library_rental_tbl_04 set return_yn = 'Y'
+ where return_date is not null;
+
+update  library_rental_tbl_04 set return_yn = 'N'
+ where return_date is null;
+
+commit;
+
+

@@ -1,0 +1,147 @@
+create table emp_master(
+   emp_id number(3), 
+   emp_name varchar2(20),
+   emp_job varchar2(2),
+   emp_grade number(2),
+   emp_pay number(8),
+   primary key(emp_id)
+);
+desc emp_master;
+drop table emp_master;
+
+insert into emp_master values(101, '이기호', '10', 10, 1000);
+insert into emp_master values(111, '정진기', '10', 10, 1500);
+insert into emp_master values(121, '남만열', '20', 10, 1200);
+insert into emp_master values(122, '박선영', '20', 20, 2700);
+insert into emp_master values(123, '박순기', '20', 20, 2500);
+insert into emp_master values(124, '최석금', '30', 20, 2400);
+insert into emp_master values(222, '김한나', '10', 30, 3500);
+insert into emp_master values(223, '정선희', '10', 30, 3400);
+insert into emp_master values(224, '김민석', '30', 30, 3900);
+insert into emp_master values(700, '우민주', '20', null, null);
+insert into emp_master values(701, '황남도', '10', null, null);
+
+select * from emp_master;
+commit;
+rollback;
+
+create table ho_master(
+   ho_grade number(2) primary key,
+   ho_start number(7),
+   ho_end number(7)
+);
+desc ho_master;
+drop table ho_master;
+
+insert into ho_master values(10,100,1999);
+insert into ho_master values(20,2000,2999);
+insert into ho_master values(30,3000,3999);
+insert into ho_master values(40,4000,4999);
+insert into ho_master values(50,5000,5999);
+insert into ho_master values(60,6000,6999);
+insert into ho_master values(70,7000,7999);
+insert into ho_master values(80,8000,8999);
+insert into ho_master values(90,9000,9999);
+
+select * from ho_master;
+commit;
+rollback;
+
+create table job_master(
+   job varchar2(2) primary key,
+   job_name varchar2(20),
+   job_level varchar2(2)
+);
+
+desc job_master;
+drop job_master;
+
+insert into job_master values('10', '인사팀장', '20');
+insert into job_master values('20', '인사담당', '10');
+insert into job_master values('30', '급여담당', '15');
+insert into job_master values('40', '근태담당', '15');
+insert into job_master values('50', '기획팀장', '20');
+
+select * from job_master;
+commit;
+rollback;
+
+1.
+select * from emp_master
+   order by emp_name asc;
+
+2.
+select ho_grade, ho_start from ho_master;
+
+3.
+select * from emp_master
+   order by emp_id desc;
+
+4.
+select * from emp_master
+   where emp_job = '10';
+
+5.
+select * from emp_master
+   where emp_job = '20' and emp_grade = 20;
+
+6.
+select a.emp_id ||'-'|| a.emp_name ||'-'||
+        a.emp_job ||'-'|| b.job_name
+from emp_master a, job_master b
+where a.emp_job = b.job;  
+
+7.
+select a.emp_id "사원번호", a.emp_name "성명",
+        a.emp_grade "호봉등급", a.emp_pay "시간급여",
+        b.ho_start "최저금액", b.ho_end "최고금액"
+from emp_master a, ho_master b
+where a.emp_grade = b.ho_grade(+);
+
+select a.emp_name, a.emp_grade, b.ho_start, b.ho_end
+    from emp_master a, ho_master b
+   where a.emp_grade = b.ho_grade
+   and a.emp_grade = 30;
+
+5/2 월-(5)
+select emp_id id_no, emp_name "성 명", emp_grade 호봉, emp_pay 주급
+from emp_master;
+
+select emp_id "USER", emp_name user_name, emp_grade pay_grade
+from emp_master;
+
+select emp_name "성 명", emp_grade "급여 등급", emp_id
+from emp_master;
+
+문1)
+select emp_id || emp_name, emp_job, emp_grade, emp_pay
+from emp_master;
+
+문2)
+select emp_id ||'-'|| emp_name
+from emp_master;
+
+문3)'성명(사원번호)'
+select emp_name || '(' || emp_id || ')'
+from emp_master;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

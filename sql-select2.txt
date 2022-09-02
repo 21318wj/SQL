@@ -1,0 +1,184 @@
+select emp_id, emp_name, 
+(select sum(emp_pay)from emp_master)
+from emp_master;
+
+
+select sum(emp_job), sum(distinct emp_job)
+from emp_master;
+
+
+select emp_id, emp_name, emp_pay,
+         (select avg(emp_pay) from emp_master) avg_pay1,
+         (select avg(nvl(emp_pay,0)) from emp_master) avg_pay2
+from emp_master
+order by emp_pay;
+
+
+select a.emp_id, a.emp_name "name", a.emp_pay, b.avg_pay, b.max_pay
+from emp_master a,
+       (select avg(emp_pay,0) avg_pay, max(emp_pay) max_pay from emp_master) b
+where a.emp_pay between b.avg_pay and b.max_pay
+order by a.emp_pay;
+
+
+select a.emp_id, a.emp_name "name", a.emp_pay, b.avg_pay, b.max_pay
+from emp_master a,
+       (select avg(nvl(emp_pay,0)) avg_pay, max(emp_pay) max_pay from emp_master) b
+where a.emp_pay between b.avg_pay and b.max_pay
+order by a.emp_pay;
+
+
+select emp_id, emp_name, emp_pay
+from emp_master
+where emp_pay <= (select avg(emp_pay,0) from emp_master);
+
+
+select emp_id, emp_name, nvl(emp_pay,0)
+from emp_master
+where nvl(emp_pay,0) <= (select avg(nvl(emp_pay,0)) from emp_master);
+
+
+select emp_id, emp_name, nvl(emp_pay,0), 
+         (select avg(nvl(emp_pay,0)) from emp_master) "avg"
+from emp_master
+where nvl(emp_pay,0) <= (select avg(nvl(emp_pay,0)) from emp_master);
+
+
+select emp_id, emp_name, nvl(emp_pay,0)
+from emp_master
+where emp_pay <= (select avg(nvl(emp_pay,0)) from emp_master) or emp_pay is null;
+
+
+select emp_id, emp_name, emp_pay,
+         (select avg(emp_pay)from emp_master) avg_pay1,
+         (select count(emp_pay) from emp_master) cnt1,
+         (select avg(nvl(emp_pay,0)) from emp_master) avg_pay2,
+         (select count(nvl(emp_pay,0)) from emp_master) cnt2
+from emp_master
+where emp_pay <= (select avg(nvl(emp_pay,0)) from emp_master);
+
+select a.emp_id, a.emp_name, nvl(a.emp_pay,0), 
+         b.avg_pay1, b.cnt1, b.avg_pay2, b.cnt2
+from emp_master a,
+        (select avg(emp_pay) avg_pay1, count(emp_pay) cnt1, 
+        avg(nvl(emp_pay,0)) avg_pay2, count(nvl(emp_pay,0)) cnt2 from emp_master) b
+where nvl(emp_pay,0) <= (select avg(nvl(emp_pay,0)) from emp_master);
+
+select * from emp_master
+where emp_grade in (select ho_grade from ho_master where ho_start < 3000);
+
+
+select * from emp_master
+where emp_grade = any (select ho_grade from ho_master where ho_start < 3000);
+
+
+select * from emp_master
+where emp_grade = some (select ho_grade from ho_master where ho_start < 3000);
+
+
+select * from ho_master
+where ho_start < any (select emp_pay from emp_master where emp_grade = 20);
+
+
+select * from ho_master
+where ho_start > any (select emp_pay from emp_master where emp_grade = 20);
+
+
+select * from ho_master
+where ho_start > (select min(emp_pay) from emp_master where emp_grade = 20);
+
+
+select * from ho_master
+where ho_end < all (select emp_pay from emp_master where emp_job = 10);
+
+
+select * from ho_master
+where ho_end < any (select emp_pay from emp_master where emp_job = 10);
+
+
+select * from emp_master
+where exists (select ho_start from ho_master where ho_grade = 10);
+
+select * from emp_master
+where not exists (select ho_start from ho_master where ho_grade = 10);
+
+
+select * from emp_master
+where (emp_job, emp_grade) in (select ho_grade, ho_grade from ho_master);
+
+1.
+select emp_id 사원번호, emp_name 성명, emp_job 직무코드, 
+        decode(emp_job,
+        '10', '인사',
+        '20', '회계',
+        '30', '전산',
+               '신입') grade,
+         nvl(emp_pay,0) 시간급여
+from emp_master;
+
+2.
+select count(*) 전체인원, sum(emp_pay) 합계,
+        max(emp_pay) max, min(emp_pay) min, avg(nvl(emp_pay,0)) 평균,
+        count(nvl(emp_pay,0)) avg_cnt
+from emp_master;
+
+3.
+select emp_id 사원번호, emp_name 성명,
+        nvl2(emp_grade,'123','NULL') 직무코드, nvl(emp_pay,0) 시간급여
+from emp_master
+where emp_grade is null;
+
+4.
+select *
+from emp_master
+where emp_pay < (select ho_end from ho_master where ho_grade = 10)
+order by emp_pay asc;
+
+5.
+select count(*) count, max(emp_pay) max_pay,
+min(emp_pay) min_pay, max(emp_pay)-min(emp_pay) "MAX-MIN"
+from emp_master;
+
+6.
+select emp_id "사원번호", emp_name "성명", nvl(emp_grade,0) "호봉코드",
+nvl(emp_pay,0) "시간급여", (select avg(nvl(emp_pay,0)) from emp_master) "평균급여"
+from emp_master
+where nvl(emp_pay,0) <(select avg(nvl(emp_pay,0)) from emp_master)
+order by nvl(emp_pay,0) asc;
+
+/*
+select emp_id "사원번호", emp_name "성명", nvl(emp_grade,0) "호봉코드",
+nvl(emp_pay,0) "시간급여", (select avg(nvl(emp_pay,0)) from emp_master) "평균급여"
+from emp_master
+where emp_pay <(select avg(nvl(emp_pay,0)) from emp_master)
+order by emp_pay asc;
+
+select avg(emp_pay), avg(nvl(emp_pay,0))
+from emp_master;
+
+select count(emp_pay), count(nvl(emp_pay,0)),
+         sum(emp_pay),
+         avg(emp_pay), avg(nvl(emp_pay,0))
+from emp_master; 
+
+select * from emp_master
+where emp_pay is null;
+*/
+
+7-1
+select * from ho_master
+where (ho_start <= any (select nvl(emp_pay,0) from emp_master where emp_job = '20')) 
+         and (ho_end >= any (select nvl(emp_pay,0) from emp_master where emp_job = '20'));
+
+7-2
+select * from ho_master
+where (ho_start <= (select max(nvl(emp_pay,0)) from emp_master where emp_job = '20')) 
+         and (ho_end >= (select min(nvl(emp_pay,0)) from emp_master where emp_job = '20'));
+
+
+
+
+
+
+
+

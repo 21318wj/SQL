@@ -1,0 +1,291 @@
+select ascii('A'), ascii('a'), ascii('ABC') from dual;
+select chr(65), chr(97), chr(98) from dual;
+select rpad('성일고2학년13반',25,'*')from dual;
+select lpad('성일고2학년13반',25,'*')from dual;
+select lpad('성일고2학년13반',25,'*')||'^^'||rpad('성일고2학년13반',25,'*')from dual;
+select trim('성일고2학년13반') from dual;
+select trim('a' from 'aa성일고2학년 a 13반aa') from dual;
+select rtrim(' 성일고2학년 13반 ')||'OK' from dual;
+select * from emp_master;
+select emp_name||'ok' from emp_master;
+
+create table temp_10 (
+	t10_01 char(10) primary key,
+	t10_02 char(10),
+	t10_03 varchar2(10),
+	t10_04 varchar2(10),
+	t10_05 number(10)
+);
+
+desc temp_10;
+drop table temp_10;
+
+insert into temp_10 values(
+	'111111', 'SunGHs', '3333331', 'sorTBubble', 12341);
+insert into temp_10 values(
+	'111112', 'sUNgHs', '3333332', 'sortMerge', 12342);
+insert into temp_10 values(
+	'111113', 's215hs', '3333333', 'dboracle', 12343);
+insert into temp_10 values(
+	'111114', 'singhs2', '3333334', 'daTaBase', 12344);
+
+select * from temp_10;
+commit;
+
+select t10_01 from temp_10;
+select t10_01||'ok' from temp_10;
+select t10_03||'ok' from temp_10;
+select rtrim(t10_01)||'ok' from temp_10;
+
+/*
+select t10_02||'ok' from temp_10;
+select t10_04||'ok' from temp_10;
+select t10_05||'ok' from temp_10;
+*/
+
+select ltrim(' 성일정보고2학년 13반 ')||'OK' from dual;
+select lower(t10_02), upper(t10_02) from temp_10;
+select lower((select t10_04 from temp_10 where t10_01='111111'))|| 
+upper((select t10_04 from temp_10 where t10_01='111114')) from temp_10;
+
+
+
+
+
+
+
+
+
+select '만 ' || trunc((months_between(sysdate, to_date('20050923','yy-mm-dd'))/12)-1) || '년 ' ||
+mod(trunc(months_between(sysdate, to_date('20050923','yy-mm-dd'))), 12) || '개월 ' ||
+abs(substr(sysdate,7,2)-substr(to_date('20050923','yy-mm-dd'),7,2)) || '일' "나의 나이"
+from dual;
+
+
+
+
+
+
+
+
+
+select trunc((months_between(sysdate, to_date('20050923','yy-mm-dd'))/12)-1) "(만)나의 나이", 
+mod(trunc(months_between(sysdate, to_date('20050923','yy-mm-dd'))), 12) "개월",
+abs(substr(sysdate,7,2)-substr(to_date('20050923','yy-mm-dd'),7,2)) "일"
+from dual;
+
+
+
+
+
+select abs(substr(sysdate,7,2)-substr(to_date('20050923','yy-mm-dd'),7,2)) "일"
+
+
+
+
+select trunc((months_between(sysdate, to_date('20050923','yy-mm-dd'))/12)-1) "나의 나이", 
+trunc(months_between(sysdate, to_date('20050923','yy-mm-dd')))-
+trunc(months_between(sysdate, to_date('20050923','yy-mm-dd'))/12)*12 "개월"
+from dual;
+
+select mod(5,3) from dual;
+
+
+
+
+select (months_between(sysdate, to_date('20050923','yy-mm-dd')))
+from dual;
+
+select ((substr(sysdate,1,2) - 05)/2)
+from dual;
+
+
+select 2005-09-23
+from dual;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+select '만 ' || trunc((months_between(sysdate, to_date('20050923','yy-mm-dd'))/12)-1) || '년 ' ||
+mod(trunc(months_between(sysdate, to_date('20050923','yy-mm-dd'))), 12) || '개월' "나이"
+from dual;
+
+select lower(t10_02), upper(t10_02) from temp_10;
+
+select * from temp_10
+where lower(t10_04) = 'sortbubble' or upper(t10_04) = 'DATABASE';
+
+
+
+select instr('123456789A123456789B12345', '7', 1, 1) from dual;
+
+select instr('123456789A123456789B12345', '7', -1, 1) from dual;
+
+select instr('123456789A123456789B12345', '7', -1, 2) from dual;
+
+select instr('123456789A123456789B12345', '3', 4, 1) from dual;
+
+select instr('123456789A123456789B12345', '3', 4, 2) from dual;
+
+select instr('123456789A123456789B12345', '3', 4, 3) from dual;
+
+create table tbl_jumin_test(
+	jumin varchar2(20) primary key,
+	name varchar2(15),
+	phone varchar2(15),
+	address varchar2(50)
+);
+
+insert into tbl_jumin_test values(
+	'7101011000001', '김주민', '01011111111', '경기도 성남시 수정구 태평 1동');
+
+insert into tbl_jumin_test values(
+	'7201012000001', '이주민', '01011112222', '경기도 성남시 수정구 태평 2동');
+
+insert into tbl_jumin_test values(
+	'7301011000001', '박주민', '01011113333', '경기도 성남시 수정구 복정동');
+
+insert into tbl_jumin_test values(
+	'7401012000001', '홍주민', '01011114444', '경기도 성남시 수정구 산성동');
+
+insert into tbl_jumin_test values(
+	'7501011000001', '조주민', '01011115555', '경기도 성남시 수정구 성남동');
+
+insert into tbl_jumin_test values(
+	'0601014000001', '최주민', '01011116666', '경기도 성남시 수정구 중앙동');
+
+insert into tbl_jumin_test values(
+	'0701013000001', '장주민', '01011117777', '경기도 성남시 수정구 상대원동');
+
+insert into tbl_jumin_test values(
+	'0801014000001', '정주민', '01011118888', '경기도 성남시 수정구 하대원동');
+
+insert into tbl_jumin_test values(
+	'0901013000001', '강주민', '01011119999', '경기도 성남시 수정구 야탑 1동');
+
+insert into tbl_jumin_test values(
+	'0001014000001', '신주민', '01022221111', '경기도 성남시 수정구 야탑 2동');
+
+delete from tbl_jumin_test;
+
+select * from tbl_jumin_test;
+
+commit;
+
+select substr(jumin, 1, 6) || '-' || substr(jumin, 7, 7) jumin from tbl_jumin_test;
+
+select substr(jumin, 1, 6) || '-' || substr(jumin, 7, 7) jumin, name,
+substr(phone,1,3) || '-' || substr(phone, 4, 4) || '-' || substr(phone,8,4) phone, address
+from tbl_jumin_test;
+	
+select substr(jumin, 1, 6) || '-' || substr(jumin, 7, 7) jumin,
+        decode(mod(substr(jumin,1,7),2), 
+	       '0', '여', '1', '남') gender, name
+from tbl_jumin_test;
+
+select case when substr(jumin, 7, 1) in ('1','2','5','6') then '19' else '20' end
+	||substr(jumin,1,2)||'년'||  substr(jumin,3,2) ||'월'|| substr(jumin,5,2) ||'일생' birth,
+         '만'||floor(months_between(sysdate,
+	to_date((case when substr(jumin,7,1) in ('1','2','5','6') then '19' else '20' end)
+	|| substr(jumin,1,6),'yyyymmdd'))/12)||'세' age, name
+from tbl_jumin_test;  
+
+
+
+
+sqlplus
+system
+1234
+
+
+select initcap(substr(t10_02,1,4))||initcap(substr(t10_02,5,2)) from temp_10;
+
+select t10_01, length(t10_01),  length(t10_02),  length(t10_03),  length(t10_04),
+         length(t10_05) from temp_10;
+
+select replace('Data Base Mysql', 'Mysql', 'Oracle') from dual;
+
+select abs(-10) from dual;
+
+select round(1234.567,1), round(1234.567, -1), round(1234.567) from dual;
+
+select floor(123.45) from dual;
+select floor(-123.45) from dual;
+select floor(0.45) from dual;
+select floor(-.56) from dual;
+select floor(-1.349) from dual;
+
+select trunc(1234.567, 1) from dual;
+select trunc(1234.567, -1) from dual;
+select floor(1234.567) from dual;
+
+select sign(10) from dual;
+select sign(-10) from dual;
+select sign(0) from dual;
+select sign(null) from dual;
+select nvl(sign(null),99) from dual;
+
+select ceil(12.5) from dual;
+select ceil(-12.5) from dual;
+select ceil(0.5) from dual;
+select ceil(-0.5) from dual;
+select ceil(null) from dual;
+
+select mod(10, 3) from dual;
+select mod(3, 10) from dual;
+select trunc(174/60) || '분 ' || mod(174, 60) || '초' from dual;
+
+with time_ss
+as (select &p_n as num from dual)
+select trunc(num/(60*60)) || '시간 ' || mod(trunc(num/60),60) || '분 ' || 
+         mod(num,60) ||'초' from time_ss;
+           
+select ' 2022년 ' || lpad(level, 2, 0) || ' 월' as no
+from dual
+connect by level <=12;
+
+
+with loop_gcm as
+   (select &p_n1 as num1, &p_n2 as num2 from dual)
+select max(level) as gcm from loop_gcm
+where mod(num1, level) = 0 and mod(num2, level) = 0
+connect by level<=num2;
+
+with loop_lcm as
+   (select &p_n1 as num1, &p_n2 as num2 from dual)
+select num1, num2,
+   (num1/max(level)) * (num2/max(level)) * max(level) as lcm from loop_lcm
+where mod(num1, level) = 0 and mod(num2, level) = 0
+connect by level <= num2;
+
+
+
+
+
+
+
+
+
+

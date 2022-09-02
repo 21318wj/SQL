@@ -1,0 +1,514 @@
+set linesize 500;
+3/15(화)
+2~3교시
+1.
+create table student_master(
+	hakbun number(7) primary key,
+	name varchar2(20),
+	jumin_no char(13),
+	hakgwa char(3)
+);
+desc student_master
+
+drop table student_master;
+2.
+create table student_master(
+	hakbun number(7),
+	name varchar2(20),
+	jumin_no char(13),
+	hakgwa char(3)
+	primary key(hakbun)
+);
+desc student_master
+
+drop table student_master;
+3.
+create table student_master(
+	hakbun number(7),
+	name varchar2(20),
+	jumin_no char(13),
+	hakgwa char(3)
+);
+desc student_master
+
+alter table student_master add primary key(hakbun);
+
+desc student_master
+4.
+insert into student_master values(2020001, '홍길동', '9103101234567', '110');
+insert into student_master values(2020002, '김선수', '8012121345901', '100');
+insert into student_master values(2020003, '이영미', '8001122678923', '100');
+insert into student_master values(2020004, '최나연', '8007252727277', '130');
+
+select * from student_master;
+
+set linesize 300;
+
+rollback;
+
+commit;
+5.
+create table hakgwa_code(
+	hakgwa char(3) primary key,
+	hak_name varchar2(20)
+);
+desc hakgwa_code;
+
+insert into hakgwa_code values('100', '경영학과');
+insert into hakgwa_code values('110', '컴퓨터공학과');
+insert into hakgwa_code values('120', '수학과');
+insert into hakgwa_code values('130', '국어과');
+
+select * from hakgwa_code;
+
+3/16(수)
+1~2교시
+//foreign key 설정
+alter table student_master add(
+constraint fk_student_master_hakgwa
+foreign key (hakgwa) references hakgwa_code (hakgwa) );
+
+//parent key not found (부모 키 X)
+insert into student_master values(2020005, '장우진', '0509233170211', '140');
+
+//unique/primary keys in table referenced by foreign keys (외래키이므로 삭제 불가)
+drop table hakgwa_code;
+
+//child record found(부모키이므로 삭제 불가)
+delete from hakgwa_code
+where hakgwa='110'
+
+create table sales_master(
+	saleyyyy number(4),
+	saleno number(4),
+	saleid varchar2(10)
+		constraint sales_master_saleid_uq unique,
+	job char(3)    not null,
+	pay number(10)
+		constraint sales_master_pay_ck check(pay>=0),
+	pay_grade number(2)
+		constraint sales_master_saleid_nn not null,
+	joindate date,
+	idate timestamp default sysdate,
+	constraint sales_master_pk primary key(saleyyyy, saleno);
+);
+insert into sales_master values
+(2021,1001,'자룡', '110', 3000000, 21, to_date('20210402', 'yyyymmdd'), sysdate);
+insert into sales_master values
+(2021,1002,'유비', '110', 3700000, 22, to_date('20210403', 'yyyymmdd'), sysdate);
+insert into sales_master values
+(2021,1003,'관우', '120', 4300000, 23, to_date('20210405', 'yyyymmdd'), sysdate);
+insert into sales_master values
+(2021,1004,'장비', '130', 4200000, 23, to_date('20210411', 'yyyymmdd'), sysdate);
+
+3/17(목)
+6~7교시
+to_char(sysdate, 'yyyy-mm-dd:hh24:mi:ss')
+
+//" "이 없다면 무조건 대문자
+select saleno,
+to_char(joindate, 'yyyymmdd hh24:mi:ss') joindate,
+to_char(idate, 'yyyymmdd hh24:mi:ss')"haksysdate" from sales_master;
+
+
+desc user_constraints;
+
+//UPPER-대문자로 변환
+select table_name, constraint_name
+from user_constraints
+where table_name=upper('&table_name')
+order by 1;
+
+//SUBSTR(n, k) n번째부터 k번째까지 가지고 온다
+//DECODE('N', 'K') N이면 K를 출력한다
+SELECT SUBSTR(a.column_name,1,15)column_name,
+          DECODE(b.constraint_type,
+	'P','PRIMARY KEY',
+	'U','UNIQUE KEY',
+	'C','CHECK OR NOT NULL',
+	'R','FPREOGN KEY')constraint_type,
+     a.constraint_name
+  FROM user_cons_columns a, user_constraints b
+WHERE a.table_name=upper('&table_name')
+  AND a.table_name=b.table_name
+  AND a.constraint_name=b.constraint_name
+ORDER BY 1;
+
+//sales_master를 참조하여 새로운 테이블 생성
+create table new_sales_master as select * from sales_master;
+(SALEYYYY,SALENO의 not null이 사라짐)
+
+3/22(화)
+3교시
+create table sales_statement_tbl(
+  sales_no number(10),
+  member_no number(5),
+  sales_price number(7),
+  sales_count number(3),
+  sales_total number(9),
+  product char(13),
+  sales_date date,
+  primary key(sales_no, product)
+);
+
+//to_date('********', '&&&&$$%%')
+//'********'를 '&&&&$$%%'형태로 입력
+insert into sales_statement_tbl values(
+2022100001, 11001, 25000, 2, 50000, '8801234567890', to_date('20220320', 'yyyymmdd') );
+
+insert into sales_statement_tbl values(
+2022100002, 11001, 15000, 1, 15000, '8801234567891', to_date('20220320', 'yyyymmdd') );
+
+insert into sales_statement_tbl values(
+2022100003, 12022, 25000, 2, 50000, '8801234567896', to_date('20220321', 'yyyymmdd') );
+
+insert into sales_statement_tbl values(
+2022100004, 12010, 15000, 4, 60000, '8801234567894', to_date('20220321', 'yyyymmdd') );
+
+create table member_tbl (
+  member_no number(5) primary key,
+  member_name varchar2(20),
+  member_phone varchar2(13),
+  member_addr varchar2(50),
+  in_date	        date,
+  grade           varchar(5),
+  city              varchar(5)
+);
+
+insert into member_tbl values(11001, '박만식', '01011111234', '서울시 서초구 서초대로', to_date('220319', 'yymmdd'),'A', '10');
+insert into member_tbl values(11002, '양재만', '01022222345', '경기도 성남시 시민로7길', to_date('220320', 'yymmdd'),'A', '20');
+insert into member_tbl values(12010, '김일용', '01033333456', '대전광역시 서구 문정로', to_date('220317', 'yymmdd'),'B', '30');
+insert into member_tbl values(12022, '서만기', '01023232345', '경기도 수원시 팔달구 정조로', to_date('220315', 'yymmdd'),'A', '20');
+
+3/23(수)
+1~2교시
+
+insert into product_code_tbl values('8801234567890', '축구공FIFA_A', 25000);
+insert into product_code_tbl values('8801234567891', '축구공', 15000);
+insert into product_code_tbl values('8801234567892', '야구공 시합용', 12000);
+insert into product_code_tbl values('8801234567893', '야구공 연습용', 5000);
+insert into product_code_tbl values('8801234567894', '마스크KF94*10', 15000);
+insert into product_code_tbl values('8801234567895', '마스크KF80*10', 13500);
+insert into product_code_tbl values('8801234567896', '루미큐브 대', 25000);
+insert into product_code_tbl values('8801234567897', '루미큐브 중', 20000);
+
+create table grade_code_tbl (
+  grade	        char(1) primary key,
+  grade_name    varchar2(10)
+);
+
+create table city_code_tbl(
+  city          char(2)   primary key,
+  city_name   varchar2(10)
+);
+
+create table product_code_tbl(
+  product	           char(13) primary key,
+  product_name    varchar2(30),
+  product_price    number(6)
+);
+
+//substr(member_phone,1,3) member_phone에서 1번째 문자부터 3번째 문자까지 가져온다
+//전화번호에 '-'삽입하기
+select member_no , member_name, 
+substr(member_phone,1,3) ||'-'|| substr(member_phone,4,4) ||'-'|| substr(member_phone,8,4) "member_phone" from member_tbl;
+
+//양재만의 고객 등급을 B로 변경
+update member_tbl set grade='B' where member_name='양재만';
+or
+update member_tbl set grade='B' where member_no='11002';
+//박만식의 정보를 삭제
+delete from member_tbl where member_name='박만식';
+or
+delete from member_tbl where member_no='11001';
+
+//sales_total의 값을 전부 0으로 변경
+update sales_statement_tbl set sales_total = 0;
+
+//sales_total의 값을 sales_price * sales_count로 변경
+update sales_statement_tbl set sales_total = sales_price * sales_count;
+
+
+3/24(목)
+6~7교시
+
+
+alter table sales_statement_tbl add(
+constraint fk_sales_statement_tbl
+foreign key (product) references product_code_tbl(product),
+constraint fk_member_tbl
+foreign key (member_no) references member_tbl(member_no) );
+
+3/25(금)
+4교시
+
+insert into sales_statement_tbl values(
+20220325, 12010, 15000, 4, 60000, '9801234567894', to_date('20220325', 'yyyymmdd') );
+
+3/29(화)
+2~3교시
+
+create table book_code_tbl_04(
+  book  	     char(13) primary key,
+  book_name varchar2(20),
+  author       varchar2(20),
+  company    varchar2(20),
+  price         number(6),
+  i_cnt	     number(3),
+  r_cnt 	     number(3)
+);
+desc book_code_tbl_04;
+
+insert into book_code_tbl_04 values(
+'8801234567890', '자바기초', '권원태', '원태출판', 27000, 25, 10);
+
+insert into book_code_tbl_04 values(
+'8801234567891', '자료구조', '김태한', '태한출판', 20000, 10, 5);
+
+insert into book_code_tbl_04 values(
+'8801234567892', '빅-데이터', '오지성', '지성출판', 28000, 22, 9);
+
+insert into book_code_tbl_04 values(
+'8801234567893', 'AI', '이윤아', '윤아출판', 32000, 12, 6);
+
+insert into book_code_tbl_04 values(
+'8801234567894', '메타버스', '권재현', '재현출판', 31000, 30, 11);
+
+insert into book_code_tbl_04 values(
+'8801234567895', 'NFT', '송주환', '주환출판', 29000, 35, 15);
+
+insert into book_code_tbl_04 values(
+'8801234567896', '삼국지', '정하은', '하은출판', 25000, 40, 27);
+
+insert into book_code_tbl_04 values(
+'8801234567897', '삼국지 경영학', '이영석', '영석출판', 30000, 20, 8);
+
+select * from book_code_tbl_04;
+                                                        
+create table member_tbl_04 (
+  member_no 	number(5) primary key,
+  member_name    varchar2(20),
+  member_phone   varchar2(13),
+  member_addr     varchar2(50),
+  in_date             date,
+  grade               char(1),
+  in_sysdate         timestamp
+);
+
+
+insert into member_tbl_04 values(
+11001, '이관우', '01012311234', '서울시 서초대로1길 10, 1101-12', to_date('2019-03-21','yyyy-mm-dd'), 'A',to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into member_tbl_04 values(
+11002, '장유비', '01023428907', '경기도 성남시 중원구 시민로7길 10-2', to_date('2020-10-23','yyyy-mm-dd'), 'C',to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into member_tbl_04 values(
+12022, '조자룡', '01033330756', '대전광역시 서구 문정로 171', to_date('2020-01-10','yyyy-mm-dd'), 'A',to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into member_tbl_04 values(
+12033, '김유비', '01049016781', '경기도 수원시 팔달구 정조로 666-10', to_date('2021-02-21','yyyy-mm-dd'), 'B', to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+select to_char(in_sysdate,'yyyy-mm-dd:hh24:mi:ss') from member_tbl_04;
+
+create table sales_statement_tbl_04 (
+  sales_no      number(10),
+  product      char(13),
+  member_no number(5),
+  sales_price   number(7),
+  sales_count  number(7),
+  sales_total   number(9),
+  sales_date   date,
+  in_stsdate   timestamp,
+  primary key(sales_no, product)
+);
+desc sales_statement_tbl_04;
+drop table sales_statement_tbl_04;
+
+insert into sales_statement_tbl_04 values(
+2022100001, '8801234567890', 11001, 27000, 2, 54000, to_date('2021-01-12','yyyy-mm-dd'), to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into sales_statement_tbl_04 values(
+2022100002, '8801234567891', 11001, 20000, 1, 20000, to_date('2021-01-12', 'yyyy-mm-dd'), to_timestamp(to_char(sysdate, 'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into sales_statement_tbl_04 values(
+2022100003, '8801234567896', 12022, 32000, 2, 64000, to_date('2021-02-02', 'yyyy-mm-dd'), to_timestamp(to_char(sysdate, 'yyyy-mm-dd:hh24:mi:ss')) ) ;
+
+insert into sales_statement_tbl_04 values(
+2022100004, '8801234567894', 12033, 31000, 1, 31000, to_date('2021-03-10', 'yyyy-mm-dd'), to_timestamp(to_char(sysdate, 'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into sales_statement_tbl_04 values(
+2022100004, '8801234567890', 12033, 27000, 3, 81000, to_date('2021-03-10', 'yyyy-mm-dd'), to_timestamp(to_char(sysdate, 'yyyy-mm-dd:hh24:mi:ss')) );
+
+select * from sales_statement_tbl_04;
+commit;
+//
+
+
+
+alter table sales_statement_tbl_04 add(
+  foreign key (product)     references book_code_tbl_04(book),
+  foreign key (member_no) references member_tbl_04(member_no) );
+
+
+
+3/30(수)
+1~2교시
+
+create table book_code_tbl_04(
+  book  	     char(13) primary key,
+  book_name varchar2(20),
+  author       varchar2(20),
+  company    varchar2(20),
+  price         number(6),
+  i_cnt	     number(3),
+  r_cnt 	     number(3)
+);
+desc book_code_tbl_04;
+drop table book_code_tbl_04;
+
+
+insert into book_code_tbl_04 values(
+'8801234567890', '자바기초', '권원태', '원태출판', 27000, 25, 10);
+
+insert into book_code_tbl_04 values(
+'8801234567891', '자료구조', '김태한', '태한출판', 20000, 10, 5);
+
+insert into book_code_tbl_04 values(
+'8801234567892', '빅-데이터', '오지성', '지성출판', 28000, 22, 9);
+
+insert into book_code_tbl_04 values(
+'8801234567893', 'AI', '이윤아', '윤아출판', 32000, 12, 6);
+
+insert into book_code_tbl_04 values(
+'8801234567894', '메타버스', '권재현', '재현출판', 31000, 30, 11);
+
+insert into book_code_tbl_04 values(
+'8801234567895', 'NFT', '송주환', '주환출판', 29000, 35, 15);
+
+insert into book_code_tbl_04 values(
+'8801234567896', '삼국지', '정하은', '하은출판', 25000, 40, 27);
+
+insert into book_code_tbl_04 values(
+'8801234567897', '삼국지 경영학', '이영석', '영석출판', 30000, 20, 8);
+
+select * from book_code_tbl_04;
+commit;
+
+create table member_tbl_04 (
+  member_no 	number(5) primary key,
+  member_name    varchar2(20),
+  member_phone   varchar2(13),
+  member_addr     varchar2(50),
+  in_date             date,
+  grade               char(1),
+  in_sysdate         timestamp
+);
+
+desc member_tbl_04;
+drop table member_tbl_04;
+
+insert into member_tbl_04 values(
+11001, '이관우', '01012311234', '서울시 서초대로1길 10, 1101-12', to_date('2019-03-21','yyyy-mm-dd'), 'A',to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into member_tbl_04 values(
+11002, '장유비', '01023428907', '경기도 성남시 중원구 시민로7길 10-2', to_date('2020-10-23','yyyy-mm-dd'), 'C',to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into member_tbl_04 values(
+12022, '조자룡', '01033330756', '대전광역시 서구 문정로 171', to_date('2020-01-10','yyyy-mm-dd'), 'A',to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+insert into member_tbl_04 values(
+12033, '김유비', '01049016781', '경기도 수원시 팔달구 정조로 666-10', to_date('2021-02-21','yyyy-mm-dd'), 'B', to_timestamp(to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss')) );
+
+select * from member_tbl_04;
+commit;
+
+//제약조건 확인
+SELECT SUBSTR(a.column_name,1,15)column_name,
+          DECODE(b.constraint_type,
+	'P','PRIMARY KEY',
+	'U','UNIQUE KEY',
+	'C','CHECK OR NOT NULL',
+	'R','FPREOGN KEY')constraint_type,
+     a.constraint_name
+  FROM user_cons_columns a, user_constraints b
+WHERE a.table_name = upper('&table_name')
+  AND a.table_name = b.table_name
+  AND a.constraint_name = b.constraint_name
+ORDER BY 1;
+
+create table sales_statement_tbl_04 (
+  sales_no      number(10),
+  product      char(13),
+  member_no number(5),
+  sales_price   number(7),
+  sales_count  number(7),
+  sales_total   number(9),
+  sales_date   date,
+  in_stsdate   timestamp,
+  primary key(sales_no, product),
+  foreign key (product)     references book_code_tbl_04(book),
+  foreign key (member_no) references member_tbl_04(member_no)
+);
+desc sales_statement_tbl_04;
+drop table sales_statement_tbl_04;
+
+3/31(목)
+6~7교시
+
+//JOIN
+select sales_statement_tbl_04.sales_no, member_tbl_04.member_name,
+        sales_statement_tbl_04.product
+  from sales_statement_tbl_04, member_tbl_04
+where sales_statement_tbl_04.member_no = member_tbl_04.member_no;
+
+select a.sales_no, b.member_name,
+        a.product
+  from sales_statement_tbl_04 a, member_tbl_04 b
+where a.member_no = b.member_no;
+
+4/1(금)
+4교시
+
+
+select count (*) from sales_statement_tbl_04;
+select count (*) from member_tbl_04;
+
+select a.sales_no, a.member_no, b.book, b.book_name
+  from sales_statement_tbl_04 a, book_code_tbl_04 b
+where a.product = b.book;
+
+//outer join(left)
+select b.book, b.book_name, a.sales_no, a.member_no
+  from sales_statement_tbl_04 a, book_code_tbl_04 b
+where a.product(+) = b.book;
+
+4/12(화)
+2~3교시
+
+select member_no 회원번호, member_name 성명, grade 고객등급,
+ decode (grade,
+            'A', '최우수',
+            'B', '우수',
+            'C', '보통',
+            'D', '신입') 고객등급명, city 도시코드
+ from member_tbl 	
+  order by member_name asc;
+
+select member_no "회원번호", member_name "성명", grade "고객등급",
+ decode (grade,
+            'A', '최우수',
+            'B', '우수', '보통,신입') "고객등급명", city "도시코드"
+ from member_tbl 	
+  order by member_name asc;
+
+update member_tbl set grade = 'C' where member_no = 12010;
+
+select member_no "회원번호",substr(member_phone,1,3) ||'-'|| 
+          substr(member_phone,4,4) ||'-'|| substr(member_phone,8,4)
+          "전화번호", to_char(in_date,'yyyy-mm-dd') "가입일자",
+          to_char(sysdate,'yyyy-mm-dd:hh24:mi:ss') "출력일시" 
+ from member_tbl;
+ order by in_date desc;
+
+
+
